@@ -85,20 +85,35 @@ class RequestMapInterceptor extends Interceptor {
     }
 
     try {
-      // 使用 GET 方法请求目标 URL
-      HttpResponse response = await HttpClients.get(item.url!, timeout: const Duration(seconds: 10));
-      
-      // 设置请求关联
-      response.request = request;
-      
+      // 创建一个完整的 GET 请求
+      Uri targetUri = Uri.parse(item.url!);
+      HttpRequest networkRequest = HttpRequest(HttpMethod.get, item.url!);
+
+      // 设置必要的请求头
+      networkRequest.headers.set('Host', '${targetUri.host}${targetUri.hasPort ? ':${targetUri.port}' : ''}');
+      networkRequest.headers.set('User-Agent', 'ProxyPin-NetworkMapper/1.0');
+      networkRequest.headers.set('Accept', '*/*');
+      networkRequest.headers.set('Connection', 'close');
+
+      // 可选：从原始请求中复制一些有用的头部（但要小心避免冲突）
+      String? originalUserAgent = request.headers.get('User-Agent');
+      if (originalUserAgent != null && originalUserAgent.isNotEmpty) {
+        networkRequest.headers.set('User-Agent', originalUserAgent);
+      }
+
+      // 使用 proxyRequest 方法发送请求，它处理得更完整
+      HttpResponse response = await HttpClients.proxyRequest(
+          networkRequest,
+          timeout: const Duration(seconds: 10)
+      );
+
       return response;
     } catch (e) {
       // 如果请求失败，返回错误响应
       HttpResponse errorResponse = HttpResponse(HttpStatus(500, 'Network mapping failed: $e'));
-      errorResponse.headers.set('Content-Type', 'text/plain');
+      errorResponse.headers.set('Content-Type', 'text/plain; charset=utf-8');
       errorResponse.body = 'Network mapping error: $e'.codeUnits;
-      errorResponse.request = request;
-      
+
       return errorResponse;
     }
   }
