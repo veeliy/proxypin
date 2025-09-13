@@ -10,6 +10,7 @@ import 'package:proxypin/ui/component/utils.dart';
 import 'package:proxypin/ui/component/widgets.dart';
 import 'package:proxypin/ui/mobile/setting/request_map/map_local.dart';
 import 'package:proxypin/ui/mobile/setting/request_map/map_scipt.dart';
+import 'package:proxypin/ui/mobile/setting/request_map/map_network.dart';
 import 'package:proxypin/utils/lang.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -401,7 +402,7 @@ class _RequestMapListState extends State<RequestMapList> {
   }
 }
 
-///请求重写规则添加对话框
+///请求映射规则添加对话框
 class MobileRequestMapEdit extends StatefulWidget {
   final RequestMapRule? rule;
   final RequestMapItem? item;
@@ -419,6 +420,7 @@ class MobileRequestMapEdit extends StatefulWidget {
 class _RequestMapEditState extends State<MobileRequestMapEdit> {
   final mapLocalKey = GlobalKey<MobileMapLocaleState>();
   final mapScriptKey = GlobalKey<MobileMapScriptState>();
+  final mapNetworkKey = GlobalKey<MobileMapNetworkState>();
   final ScrollController scrollController = ScrollController();
 
   late RequestMapRule rule;
@@ -472,10 +474,13 @@ class _RequestMapEditState extends State<MobileRequestMapEdit> {
                     RequestMapItem item;
                     if (mapType == RequestMapType.local) {
                       item = mapLocalKey.currentState!.getRequestMapItem();
-                    } else {
+                    } else if (mapType == RequestMapType.script) {
                       String? scriptCode = mapScriptKey.currentState?.getScriptCode();
                       item = widget.item ?? RequestMapItem();
                       item.script = scriptCode;
+                    } else {
+                      // network type
+                      item = mapNetworkKey.currentState!.getRequestMapItem();
                     }
 
                     var requestMapManager = await RequestMapManager.instance;
@@ -554,6 +559,8 @@ class _RequestMapEditState extends State<MobileRequestMapEdit> {
   Widget mapRule() {
     if (mapType == RequestMapType.script) {
       return MobileMapScript(key: mapScriptKey, script: widget.item?.script);
+    } else if (mapType == RequestMapType.network) {
+      return MobileMapNetwork(key: mapNetworkKey, item: widget.item);
     }
 
     return MobileMapLocal(scrollController: scrollController, key: mapLocalKey, item: widget.item);

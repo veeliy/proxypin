@@ -163,7 +163,7 @@ class RequestRowState extends State<RequestRow> {
       return null;
     }
     if (request.processInfo == null) {
-      return const Icon(Icons.question_mark, size: 38);
+      return const Icon(Icons.adb, size: 38);
     }
 
     //如果有缓存图标直接返回图标

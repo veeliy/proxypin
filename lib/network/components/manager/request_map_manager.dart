@@ -159,6 +159,7 @@ class RequestMapManager {
 enum RequestMapType {
   local("本地"),
   script("脚本"),
+  network("网络"),
   ;
 
   //名称
@@ -227,8 +228,11 @@ class RequestMapItem {
   String? bodyType;
 
   String? bodyFile;
+  
+  // network mapping url
+  String? url;
 
-  RequestMapItem({this.script, this.statusCode, this.headers, this.body, this.bodyType, this.bodyFile});
+  RequestMapItem({this.script, this.statusCode, this.headers, this.body, this.bodyType, this.bodyFile, this.url});
 
   /// 从json中创建
   factory RequestMapItem.fromJson(Map<dynamic, dynamic> map) {
@@ -239,6 +243,7 @@ class RequestMapItem {
       body: map['body'],
       bodyType: map['bodyType'],
       bodyFile: map['bodyFile'],
+      url: map['url'],
     );
   }
 
@@ -250,6 +255,7 @@ class RequestMapItem {
       'body': body,
       'bodyType': bodyType,
       'bodyFile': bodyFile,
+      'url': url,
     };
   }
 }

@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:proxypin/network/components/interceptor.dart';
 import 'package:proxypin/network/http/http.dart';
+import 'package:proxypin/network/http/http_client.dart';
 import 'package:proxypin/network/util/file_read.dart';
 
 import 'js/script_engine.dart';
@@ -63,6 +64,9 @@ class RequestMapInterceptor extends Interceptor {
       response = await mapLocalResponse(mapRule, item);
     } else if (mapRule.type == RequestMapType.script && item.script != null) {
       response = await executeScript(request, mapRule, item.script!);
+    } else if (mapRule.type == RequestMapType.network && item.url != null) {
+      // 网络映射
+      response = await mapNetworkResponse(request, mapRule, item);
     }
 
     if (response == null) {
@@ -72,6 +76,31 @@ class RequestMapInterceptor extends Interceptor {
     response.request = request;
     request.response = response;
     return response;
+  }
+
+  /// 网络映射响应
+  Future<HttpResponse?> mapNetworkResponse(HttpRequest request, RequestMapRule rule, RequestMapItem item) async {
+    if (item.url == null || item.url!.isEmpty) {
+      return null;
+    }
+
+    try {
+      // 使用 GET 方法请求目标 URL
+      HttpResponse response = await HttpClients.get(item.url!, timeout: const Duration(seconds: 10));
+      
+      // 设置请求关联
+      response.request = request;
+      
+      return response;
+    } catch (e) {
+      // 如果请求失败，返回错误响应
+      HttpResponse errorResponse = HttpResponse(HttpStatus(500, 'Network mapping failed: $e'));
+      errorResponse.headers.set('Content-Type', 'text/plain');
+      errorResponse.body = 'Network mapping error: $e'.codeUnits;
+      errorResponse.request = request;
+      
+      return errorResponse;
+    }
   }
 
   /// 重写响应
