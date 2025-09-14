@@ -231,8 +231,11 @@ class RequestMapItem {
   
   // network mapping url
   String? url;
+  
+  // AES解密开关
+  bool? enableAesDecrypt;
 
-  RequestMapItem({this.script, this.statusCode, this.headers, this.body, this.bodyType, this.bodyFile, this.url});
+  RequestMapItem({this.script, this.statusCode, this.headers, this.body, this.bodyType, this.bodyFile, this.url, this.enableAesDecrypt});
 
   /// 从json中创建
   factory RequestMapItem.fromJson(Map<dynamic, dynamic> map) {
@@ -244,6 +247,7 @@ class RequestMapItem {
       bodyType: map['bodyType'],
       bodyFile: map['bodyFile'],
       url: map['url'],
+      enableAesDecrypt: map['enableAesDecrypt'],
     );
   }
 
@@ -256,6 +260,7 @@ class RequestMapItem {
       'bodyType': bodyType,
       'bodyFile': bodyFile,
       'url': url,
+      'enableAesDecrypt': enableAesDecrypt,
     };
   }
 }

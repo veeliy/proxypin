@@ -13,6 +13,7 @@ class MobileMapNetwork extends StatefulWidget {
 
 class MobileMapNetworkState extends State<MobileMapNetwork> {
   late TextEditingController urlController;
+  late bool enableAesDecrypt;
 
   AppLocalizations get localizations => AppLocalizations.of(context)!;
 
@@ -20,6 +21,7 @@ class MobileMapNetworkState extends State<MobileMapNetwork> {
   void initState() {
     super.initState();
     urlController = TextEditingController(text: widget.item?.url ?? '');
+    enableAesDecrypt = widget.item?.enableAesDecrypt ?? false;
   }
 
   @override
@@ -31,6 +33,7 @@ class MobileMapNetworkState extends State<MobileMapNetwork> {
   RequestMapItem getRequestMapItem() {
     RequestMapItem item = widget.item ?? RequestMapItem();
     item.url = urlController.text;
+    item.enableAesDecrypt = enableAesDecrypt;
     return item;
   }
 
@@ -70,6 +73,32 @@ class MobileMapNetworkState extends State<MobileMapNetwork> {
           Text(
             '将请求转发到指定的网络地址',
             style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 15),
+          // AES解密开关
+          Row(
+            children: [
+              Text(
+                'AES解密:',
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(width: 10),
+              Switch(
+                value: enableAesDecrypt,
+                onChanged: (value) {
+                  setState(() {
+                    enableAesDecrypt = value;
+                  });
+                },
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '对响应体进行AES解密',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+              ),
+            ],
           ),
         ],
       ),
