@@ -23,6 +23,7 @@ import 'package:proxypin/network/http/http.dart';
 import 'package:proxypin/network/http/http_client.dart';
 import 'package:proxypin/network/util/file_read.dart';
 
+import '../../utils/encryption_service.dart';
 import 'js/script_engine.dart';
 import 'manager/request_map_manager.dart';
 import 'manager/script_manager.dart';
@@ -106,6 +107,11 @@ class RequestMapInterceptor extends Interceptor {
           networkRequest,
           timeout: const Duration(seconds: 10)
       );
+      
+      // 检查是否需要进行AES解密
+      if (item.enableAesDecrypt == true) {
+        await _performAesDecryption(response);
+      }
 
       return response;
     } catch (e) {
@@ -115,6 +121,37 @@ class RequestMapInterceptor extends Interceptor {
       errorResponse.body = 'Network mapping error: $e'.codeUnits;
 
       return errorResponse;
+    }
+  }
+
+  /// 对响应体进行AES解密
+  Future<void> _performAesDecryption(HttpResponse response) async {
+    if (response.body == null || response.body!.isEmpty) {
+      return;
+    }
+
+    try {
+      // TODO: 这里由你来实现AES解密逻辑
+      // 示例代码结构：
+      // List<int> encryptedData = response.body!;
+      // List<int> decryptedData = await yourAesDecryptMethod(encryptedData);
+      // response.body = decryptedData;
+      // response.headers.contentLength = decryptedData.length;
+      
+      print('[RequestMap] AES解密功能待实现');
+      String originalBody = await response.decodeBodyString();
+      final dynamic jsonData = json.decode(originalBody);
+      print('获取到数据，正在尝试解密...');
+
+      // 使用加密服务解密数据
+      final dynamic decryptedData = EncryptionService.decryptJson(jsonData);
+      response.body = utf8.encode(decryptedData);
+      response.headers.contentLength = response.body!.length;
+      response.headers.remove('Content-Encoding');
+      
+    } catch (e) {
+      // 如果解密失败，记录错误但不影响响应
+      print('[RequestMap] AES解密失败: $e');
     }
   }
 
