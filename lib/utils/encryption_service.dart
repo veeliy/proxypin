@@ -119,16 +119,7 @@ class EncryptionService {
       
       // 移除PKCS7填充
       final Uint8List decrypted = _removePKCS7Padding(decryptedPadded);
-      
-      // 转换为字符串并解析JSON
-      final String decryptedText = utf8.decode(decrypted);
-      
-      if (decryptedText.isEmpty) {
-        throw Exception('解密结果为空');
-      }
-      
-      print('PointyCastle解密成功，解密后长度: ${decryptedText.length}');
-      return json.decode(decryptedText);
+      return decrypted;
       
     } catch (error) {
       print('解密失败: $error');
