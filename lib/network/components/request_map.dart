@@ -137,7 +137,7 @@ class RequestMapInterceptor extends Interceptor {
       // 使用加密服务解密数据
       response.body = EncryptionService.decryptJson(jsonData);
       response.headers.clear();
-      
+
     } catch (e) {
       // 如果解密失败，记录错误但不影响响应
       print('AES解密失败: $e');

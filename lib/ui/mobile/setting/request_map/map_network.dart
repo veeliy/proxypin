@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/components/manager/request_map_manager.dart';
+import 'package:proxypin/ui/component/widgets.dart';
 
 class MobileMapNetwork extends StatefulWidget {
   final RequestMapItem? item;
@@ -40,7 +41,7 @@ class MobileMapNetworkState extends State<MobileMapNetwork> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,7 +54,7 @@ class MobileMapNetworkState extends State<MobileMapNetwork> {
             controller: urlController,
             style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(
-              labelText: 'URL',
+              labelText: '映射的网络URL',
               hintText: 'https://api.example.com/endpoint',
               hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -70,11 +71,6 @@ class MobileMapNetworkState extends State<MobileMapNetwork> {
             },
           ),
           const SizedBox(height: 10),
-          Text(
-            '将请求转发到指定的网络地址',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 15),
           // AES解密开关
           Row(
             children: [
@@ -83,20 +79,10 @@ class MobileMapNetworkState extends State<MobileMapNetwork> {
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
               const SizedBox(width: 10),
-              Switch(
+              SwitchWidget(
                 value: enableAesDecrypt,
-                onChanged: (value) {
-                  setState(() {
-                    enableAesDecrypt = value;
-                  });
-                },
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  '对响应体进行AES解密',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
+                onChanged: (value) => enableAesDecrypt = value,
+                scale: 0.8,
               ),
             ],
           ),
