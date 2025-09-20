@@ -43,6 +43,8 @@ class Configuration {
   //外部代理
   ProxyInfo? externalProxy;
 
+  String? networkRuleSyncUrl;
+
   //白名单应用
   List<String> appWhitelist = [];
 
@@ -95,6 +97,7 @@ class Configuration {
     if (config['externalProxy'] != null) {
       externalProxy = ProxyInfo.fromJson(config['externalProxy']);
     }
+    networkRuleSyncUrl = config['networkRuleSyncUrl'];
     appWhitelist = List<String>.from(config['appWhitelist'] ?? []);
     appWhitelistEnabled = config['appWhitelistEnabled'] ?? true;
     appBlacklist = config['appBlacklist'] == null ? null : List<String>.from(config['appBlacklist']);
@@ -145,6 +148,7 @@ class Configuration {
       'enableSocks5': enableSocks5,
       'proxyPassDomains': proxyPassDomains,
       'externalProxy': externalProxy?.toJson(),
+      'networkRuleSyncUrl': networkRuleSyncUrl,
       'appWhitelist': appWhitelist,
       'appWhitelistEnabled': appWhitelistEnabled,
       'appBlacklist': appBlacklist,
