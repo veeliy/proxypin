@@ -3,7 +3,10 @@ import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:proxypin/network/http/http.dart';
+import 'package:proxypin/network/http/http_client.dart';
 
+import '../../../utils/encryption_service.dart';
 import '../../util/logger.dart';
 import '../../util/random.dart';
 
@@ -140,6 +143,42 @@ class RequestMapManager {
     _mapItemsCache.clear();
   }
 
+  ///重新加载配置
+  Future<void> reloadConfigFromNetwork(String url) async {
+    try {
+      Uri targetUri = Uri.parse(url);
+      HttpRequest networkRequest = HttpRequest(HttpMethod.get, url);
+
+      // 设置必要的请求头
+      networkRequest.headers.set('Host', '${targetUri.host}${targetUri.hasPort ? ':${targetUri.port}' : ''}');
+      networkRequest.headers.set('User-Agent', 'ProxyPin-NetworkMapper/1.0');
+      networkRequest.headers.set('Accept', '*/*');
+      networkRequest.headers.set('Connection', 'close');
+
+      // 使用 proxyRequest 方法发送请求，它处理得更完整
+      HttpResponse response = await HttpClients.proxyRequest(
+          networkRequest,
+          timeout: const Duration(seconds: 10)
+      );
+
+      String originalBody = await response.decodeBodyString();
+      final dynamic jsonData = json.decode(originalBody);
+      final dynamic decrypted = EncryptionService.decryptJson(jsonData);
+      // 转换为字符串并解析JSON
+      final dynamic data = json.decode(utf8.decode(decrypted));
+      List<dynamic> list = data is List<dynamic> ? data : [];
+      rules.clear();
+      for (var item in list) {
+        var mapRule = RequestMapRule.fromJson(item);
+        var requestMapItem = RequestMapItem.fromJson(item['item']);
+        await addRule(mapRule, requestMapItem);
+      }
+
+    } catch (e) {
+      logger.e("reload request map config from network failed: $e");
+    }
+  }
+
   ///保存配置
   Future<void> flushConfig() async {
     var file = await _path;
@@ -230,12 +269,12 @@ class RequestMapItem {
   String? bodyFile;
   
   // network mapping url
-  String? url;
+  String? mappingUrl;
   
   // AES解密开关
   bool? enableAesDecrypt;
 
-  RequestMapItem({this.script, this.statusCode, this.headers, this.body, this.bodyType, this.bodyFile, this.url, this.enableAesDecrypt});
+  RequestMapItem({this.script, this.statusCode, this.headers, this.body, this.bodyType, this.bodyFile, this.mappingUrl, this.enableAesDecrypt});
 
   /// 从json中创建
   factory RequestMapItem.fromJson(Map<dynamic, dynamic> map) {
@@ -246,7 +285,7 @@ class RequestMapItem {
       body: map['body'],
       bodyType: map['bodyType'],
       bodyFile: map['bodyFile'],
-      url: map['url'],
+      mappingUrl: map['mappingUrl'],
       enableAesDecrypt: map['enableAesDecrypt'],
     );
   }
@@ -259,7 +298,7 @@ class RequestMapItem {
       'body': body,
       'bodyType': bodyType,
       'bodyFile': bodyFile,
-      'url': url,
+      'mappingUrl': mappingUrl,
       'enableAesDecrypt': enableAesDecrypt,
     };
   }

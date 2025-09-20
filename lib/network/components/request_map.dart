@@ -65,7 +65,7 @@ class RequestMapInterceptor extends Interceptor {
       response = await mapLocalResponse(mapRule, item);
     } else if (mapRule.type == RequestMapType.script && item.script != null) {
       response = await executeScript(request, mapRule, item.script!);
-    } else if (mapRule.type == RequestMapType.network && item.url != null) {
+    } else if (mapRule.type == RequestMapType.network && item.mappingUrl != null) {
       // 网络映射
       response = await mapNetworkResponse(request, mapRule, item);
     }
@@ -81,14 +81,14 @@ class RequestMapInterceptor extends Interceptor {
 
   /// 网络映射响应
   Future<HttpResponse?> mapNetworkResponse(HttpRequest request, RequestMapRule rule, RequestMapItem item) async {
-    if (item.url == null || item.url!.isEmpty) {
+    if (item.mappingUrl == null || item.mappingUrl!.isEmpty) {
       return null;
     }
 
     try {
       // 创建一个完整的 GET 请求
-      Uri targetUri = Uri.parse(item.url!);
-      HttpRequest networkRequest = HttpRequest(HttpMethod.get, item.url!);
+      Uri targetUri = Uri.parse(item.mappingUrl!);
+      HttpRequest networkRequest = HttpRequest(HttpMethod.get, item.mappingUrl!);
 
       // 设置必要的请求头
       networkRequest.headers.set('Host', '${targetUri.host}${targetUri.hasPort ? ':${targetUri.port}' : ''}');
@@ -112,6 +112,7 @@ class RequestMapInterceptor extends Interceptor {
       if (item.enableAesDecrypt == true) {
         await _performAesDecryption(response);
       }
+      response.status = HttpStatus.valueOf(item.statusCode ?? response.status.code);
 
       return response;
     } catch (e) {

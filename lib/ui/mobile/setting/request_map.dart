@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_toastr/flutter_toastr.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
+import 'package:proxypin/network/bin/configuration.dart';
 import 'package:proxypin/network/components/manager/request_map_manager.dart';
 import 'package:proxypin/ui/component/app_dialog.dart';
 import 'package:proxypin/ui/component/utils.dart';
@@ -11,6 +12,7 @@ import 'package:proxypin/ui/component/widgets.dart';
 import 'package:proxypin/ui/mobile/setting/request_map/map_local.dart';
 import 'package:proxypin/ui/mobile/setting/request_map/map_scipt.dart';
 import 'package:proxypin/ui/mobile/setting/request_map/map_network.dart';
+import 'package:proxypin/ui/mobile/setting/rule_sync_setting.dart';
 import 'package:proxypin/utils/lang.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -40,10 +42,12 @@ class MobileRequestMapPage extends StatefulWidget {
 
 class _RequestMapPageState extends State<MobileRequestMapPage> {
   AppLocalizations get localizations => AppLocalizations.of(context)!;
+  late Configuration configuration;
 
   @override
   void initState() {
     super.initState();
+    getConfiguration();
   }
 
   @override
@@ -77,18 +81,30 @@ class _RequestMapPageState extends State<MobileRequestMapPage> {
                                       _refreshConfig();
                                     }))),
                       ]),
-                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                        const SizedBox(width: 10),
-                        TextButton.icon(
-                            icon: const Icon(Icons.add, size: 18), onPressed: showEdit, label: Text(localizations.add)),
-                        const SizedBox(width: 10),
-                        TextButton.icon(
-                          icon: const Icon(Icons.input_rounded, size: 18),
-                          onPressed: import,
-                          label: Text(localizations.import),
-                        ),
-                        const SizedBox(width: 10),
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    //const SizedBox(width: 10),
+                    TextButton.icon(
+                        icon: const Icon(Icons.add, size: 18), onPressed: showEdit, label: Text(localizations.add)),
+                    //const SizedBox(width: 10),
+                    TextButton.icon(
+                      icon: const Icon(Icons.input_rounded, size: 18),
+                      onPressed: import,
+                      label: Text(localizations.import),
+                    ),
+                    //const SizedBox(width: 10),
+                    TextButton.icon(
+                      icon: const Icon(Icons.settings, size: 18),
+                      onPressed: importFromNetworkSetting,
+                      label: Text('设置'),
+                    ),
+                    //const SizedBox(width: 10),
+                    TextButton.icon(
+                      icon: const Icon(Icons.refresh_rounded, size: 18),
+                      onPressed: refreshFromNetwork,
+                      label: Text('刷新'),
+                    ),
+                    //const SizedBox(width: 10),
+                  ]),
                       const SizedBox(height: 10),
                       Expanded(child: RequestMapList(list: data.rules)),
                     ]))));
@@ -122,6 +138,40 @@ class _RequestMapPageState extends State<MobileRequestMapPage> {
         CustomToast.error("${localizations.importFailed} $e").show(context);
       }
     }
+  }
+
+  Future<void> getConfiguration() async {
+    configuration = await Configuration.instance;
+  }
+
+  Future<void> refreshFromNetwork() async {
+    try {
+      final networkRuleSyncUrl = configuration.networkRuleSyncUrl;
+      if ((networkRuleSyncUrl == null || networkRuleSyncUrl.isEmpty) && mounted) {
+        CustomToast.error('未设置导入URL').show(context);
+        return;
+      }
+      var manager = await RequestMapManager.instance;
+      await manager.reloadConfigFromNetwork(configuration.networkRuleSyncUrl!);
+
+      if (mounted) {
+        CustomToast.success(localizations.importSuccess).show(context);
+      }
+      setState(() {});
+    } catch (e) {
+      if (mounted) {
+        CustomToast.error("${localizations.importFailed} $e").show(context);
+      }
+    }
+  }
+
+  void importFromNetworkSetting() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return RuleSyncSettingDialog(configuration: configuration);
+        });
   }
 
   /// 添加脚本
