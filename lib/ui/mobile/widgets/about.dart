@@ -42,53 +42,61 @@ class _AboutState extends State<About> {
     String gitHub = "https://github.com/wanghongenpin/proxypin";
     return Scaffold(
         appBar: AppBar(title: Text(localizations.about, style: const TextStyle(fontSize: 16)), centerTitle: true),
-        body: Column(
-          children: [
-            const SizedBox(height: 10),
-            const Text("ProxyPin", style: TextStyle(fontSize: 20)),
-            const SizedBox(height: 20),
-            Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Text(isCN ? "全平台开源免费抓包软件" : "Full platform open source free capture HTTP(S) traffic software")),
-            const SizedBox(height: 10),
-            Text("${localizations.version} ${AppConfiguration.version}"),
-            ListTile(
-                title: const Text("GitHub"),
-                trailing: const Icon(Icons.open_in_new, size: 22),
-                onTap: () {
-                  launchUrl(Uri.parse(gitHub), mode: LaunchMode.externalApplication);
-                }),
-            ListTile(
-                title: Text(localizations.feedback),
-                trailing: const Icon(Icons.open_in_new, size: 22),
-                onTap: () {
-                  launchUrl(Uri.parse("$gitHub/issues"), mode: LaunchMode.externalApplication);
-                }),
-            ListTile(
-                title: Text(localizations.appUpdateCheckVersion),
-                trailing: checkUpdating
-                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator())
-                    : const Icon(Icons.sync, size: 22),
-                onTap: () async {
-                  if (checkUpdating) {
-                    return;
-                  }
-                  setState(() {
-                    checkUpdating = true;
-                  });
-                  await AppUpdateRepository.checkUpdate(context, canIgnore: false, showToast: true);
-                  setState(() {
-                    checkUpdating = false;
-                  });
-                }),
-            ListTile(
-                title: Text(isCN ? "下载地址" : "Download"),
-                trailing: const Icon(Icons.open_in_new, size: 22),
-                onTap: () {
-                  launchUrl(Uri.parse(isCN ? "https://gitee.com/wanghongenpin/proxypin/releases" : "$gitHub/releases"),
-                      mode: LaunchMode.externalApplication);
-                })
-          ],
-        ));
+        body: ListView(padding: const EdgeInsets.all(12), children: [
+          const SizedBox(height: 6),
+          Center(child: Text("ProxyPin", style: Theme.of(context).textTheme.headlineSmall)),
+          const SizedBox(height: 10),
+          Center(
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(isCN ? "全平台开源免费抓包软件" : "Full platform open source free capture HTTP(S) traffic software",
+                      textAlign: TextAlign.center))),
+          const SizedBox(height: 8),
+          Center(child: Text("${localizations.version} ${AppConfiguration.version}")),
+          const SizedBox(height: 12),
+          Card(
+              color: Colors.transparent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.13)),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Column(children: [
+                ListTile(
+                    title: const Text("GitHub"),
+                    trailing: const Icon(Icons.open_in_new, size: 22),
+                    onTap: () {
+                      launchUrl(Uri.parse(gitHub), mode: LaunchMode.externalApplication);
+                    }),
+                Divider(height: 0, thickness: 0.4, color: Theme.of(context).dividerColor.withValues(alpha: 0.22)),
+                ListTile(
+                    title: Text(localizations.feedback),
+                    trailing: const Icon(Icons.open_in_new, size: 22),
+                    onTap: () {
+                      launchUrl(Uri.parse("$gitHub/issues"), mode: LaunchMode.externalApplication);
+                    }),
+                Divider(height: 0, thickness: 0.4, color: Theme.of(context).dividerColor.withValues(alpha: 0.22)),
+                ListTile(
+                    title: Text(localizations.appUpdateCheckVersion),
+                    trailing: checkUpdating
+                        ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.sync, size: 22),
+                    onTap: () async {
+                      if (checkUpdating) return;
+                      setState(() => checkUpdating = true);
+                      await AppUpdateRepository.checkUpdate(context, canIgnore: false, showToast: true);
+                      if (mounted) setState(() => checkUpdating = false);
+                    }),
+                Divider(height: 0, thickness: 0.4, color: Theme.of(context).dividerColor.withValues(alpha: 0.22)),
+                ListTile(
+                    title: Text(isCN ? "下载地址" : "Download"),
+                    trailing: const Icon(Icons.open_in_new, size: 22),
+                    onTap: () {
+                      final url = isCN
+                          ? "https://gitee.com/wanghongenpin/proxypin/releases"
+                          : "$gitHub/releases";
+                      launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                    }),
+              ]))
+        ]));
   }
 }

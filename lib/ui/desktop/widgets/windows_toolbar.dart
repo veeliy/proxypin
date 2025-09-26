@@ -38,10 +38,8 @@ class _WindowsToolbarState extends State<WindowsToolbar> with WindowListener {
               'assets/icon_foreground.png',
               width: 32,
             ))),
-        Expanded(
-            child: DragToMoveArea(
-          child: widget.title ?? Container(),
-        )),
+        widget.title ?? SizedBox(),
+        Expanded(child: DragToMoveArea(child: Container())),
         WindowCaptionButton.minimize(
             brightness: Theme.brightnessOf(context),
             onPressed: () async {

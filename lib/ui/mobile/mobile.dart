@@ -194,38 +194,49 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
             builder: (context, index, child) => Scaffold(
                 body: IndexedStack(index: index, children: navigationView),
                 bottomNavigationBar: widget.appConfiguration.bottomNavigation
-                    ? Container(
-                        constraints: const BoxConstraints(maxHeight: 85),
-                        child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: BottomNavigationBar(
-                            type: BottomNavigationBarType.fixed,
-                            selectedIconTheme: const IconThemeData(size: 26),
-                            unselectedIconTheme: const IconThemeData(size: 26),
-                            selectedFontSize: 0,
-                            elevation: 0,
-                            items: [
-                              BottomNavigationBarItem(
-                                  tooltip: localizations.requests,
-                                  icon: const Icon(Icons.workspaces_outlined),
-                                  label: localizations.requests),
-                              BottomNavigationBarItem(
-                                  tooltip: localizations.toolbox,
-                                  icon: const Icon(Icons.hardware_outlined),
-                                  label: localizations.toolbox),
-                              BottomNavigationBarItem(
-                                  tooltip: localizations.config,
-                                  icon: const Icon(Icons.description_outlined),
-                                  label: localizations.config),
-                              BottomNavigationBarItem(
-                                  tooltip: localizations.setting,
-                                  icon: const Icon(Icons.settings_outlined),
-                                  label: localizations.setting),
-                            ],
-                            currentIndex: _selectIndex.value,
-                            onTap: (index) => _selectIndex.value = index,
-                          ),
-                        ))
+                    ? Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Material(
+                            elevation: 8,
+                            surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
+                            color: Theme.of(context).colorScheme.surface,
+                            child: SafeArea(
+                                top: false,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                                  child: BottomNavigationBar(
+                                    backgroundColor: Colors.transparent,
+                                    type: BottomNavigationBarType.fixed,
+                                    showSelectedLabels: false,
+                                    showUnselectedLabels: false,
+                                    selectedItemColor: Theme.of(context).colorScheme.primary,
+                                    unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    iconSize: 24,
+                                    elevation: 0,
+                                    items: [
+                                      BottomNavigationBarItem(
+                                          tooltip: localizations.requests,
+                                          icon: const Icon(Icons.workspaces_outlined),
+                                          label: localizations.requests),
+                                      BottomNavigationBarItem(
+                                          tooltip: localizations.toolbox,
+                                          icon: const Icon(Icons.hardware_outlined),
+                                          label: localizations.toolbox),
+                                      BottomNavigationBarItem(
+                                          tooltip: localizations.config,
+                                          icon: const Icon(Icons.description_outlined),
+                                          label: localizations.config),
+                                      BottomNavigationBarItem(
+                                          tooltip: localizations.setting,
+                                          icon: const Icon(Icons.settings_outlined),
+                                          label: localizations.setting),
+                                    ],
+                                    currentIndex: _selectIndex.value,
+                                    onTap: (index) => _selectIndex.value = index,
+                                  ),
+                                )))))
                     : null)));
   }
 
@@ -241,7 +252,7 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
       }
 
       List<String>? appList =
-          proxyServer.configuration.appWhitelistEnabled ? proxyServer.configuration.appWhitelist : [];
+      proxyServer.configuration.appWhitelistEnabled ? proxyServer.configuration.appWhitelist : [];
       List<String>? disallowApps;
       if (appList.isEmpty) {
         disallowApps = proxyServer.configuration.appBlacklist ?? [];
@@ -282,32 +293,32 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
 
     String content = isCN
         ? '提示：默认不会开启HTTPS抓包，请安装证书后再开启HTTPS抓包。\n\n'
-            '1. 消息体增加搜索高亮；\n'
-            '2. WebSocket 消息体增加预览；\n'
-            '3. 安卓ROOT系统支持自动安装系统证书；\n'
-            '4. Socket自动清理，防止退出时资源占用问题；\n'
-            '5. 调整UI菜单；\n'
-            '6. 修复脚本fetch API部分请求bug；\n'
-            '7. 修复HTTP2包大小不正确；\n'
-            '8. 修复请求映射Bug；\n'
-            '9. 修复手机端历史未自动保存bug；\n'
-            '10. 修复安卓部分闪退情况；\n'
+        '1. 消息体增加搜索高亮；\n'
+        '2. WebSocket 消息体增加预览；\n'
+        '3. 安卓ROOT系统支持自动安装系统证书；\n'
+        '4. Socket自动清理，防止退出时资源占用问题；\n'
+        '5. 调整UI菜单；\n'
+        '6. 修复脚本fetch API部分请求bug；\n'
+        '7. 修复HTTP2包大小不正确；\n'
+        '8. 修复请求映射Bug；\n'
+        '9. 修复手机端历史未自动保存bug；\n'
+        '10. 修复安卓部分闪退情况；\n'
         : 'Tips: HTTPS packet capture is disabled by default. Please install the certificate before enabling HTTPS packet capture.\n\n'
-            '1. Add search highlight for message body;\n'
-            '2. Add preview for WebSocket message body;\n'
-            '3. Android ROOT system supports automatic installation of system certificates;\n'
-            '4. Socket auto cleanup to prevent resource occupation when exiting;\n'
-            '5. Adjust UI menu;\n'
-            '5. Fix script fetch API part request bug;\n'
-            '7. Fix incorrect HTTP2 packet size;\n'
-            '8. Fix request map bug;\n'
-            '9. Fix the bug that the history on the mobile side is not saved automatically;\n'
-            '10. Fix some Android crash issues;\n';
+        '1. Add search highlight for message body;\n'
+        '2. Add preview for WebSocket message body;\n'
+        '3. Android ROOT system supports automatic installation of system certificates;\n'
+        '4. Socket auto cleanup to prevent resource occupation when exiting;\n'
+        '5. Adjust UI menu;\n'
+        '5. Fix script fetch API part request bug;\n'
+        '7. Fix incorrect HTTP2 packet size;\n'
+        '8. Fix request map bug;\n'
+        '9. Fix the bug that the history on the mobile side is not saved automatically;\n'
+        '10. Fix some Android crash issues;\n';
     showAlertDialog(isCN ? '更新内容V${AppConfiguration.version}' : "Update content V${AppConfiguration.version}", content,
-        () {
-      widget.appConfiguration.upgradeNoticeV21 = false;
-      widget.appConfiguration.flushConfig();
-    });
+            () {
+          widget.appConfiguration.upgradeNoticeV21 = false;
+          widget.appConfiguration.flushConfig();
+        });
   }
 
   void showAlertDialog(String title, String content, Function onClose) {

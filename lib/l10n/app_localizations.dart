@@ -1979,6 +1979,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Do not request remote services, use local configuration or script for response'**
   String get requestMapDescribe;
+
+  /// No description provided for @automatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get automatic;
+
+  /// No description provided for @manual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get manual;
+
+  /// No description provided for @openNewWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Open New Window'**
+  String get openNewWindow;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
