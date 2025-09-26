@@ -966,6 +966,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get requestMapDescribe => '不请求远程服务，使用本地配置或脚本进行响应';
+
+  @override
+  String get automatic => '自动安装';
+
+  @override
+  String get manual => '手动安装';
+
+  @override
+  String get openNewWindow => '新窗口打开';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

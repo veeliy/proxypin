@@ -102,8 +102,7 @@ class _ToolbarState extends State<Toolbar> {
             final ips = await localIps(readCache: false);
             phoneConnect(ips, widget.proxyServer.port);
           }),
-
-      const Padding(padding: EdgeInsets.only(left: 30)),
+      const Padding(padding: EdgeInsets.only(left: 10)),
     ]);
   }
 

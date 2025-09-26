@@ -335,5 +335,10 @@
   "appUpdateIgnoreBtnTxt": "忽略",
 
   "requestMap": "请求映射",
-  "requestMapDescribe": "不请求远程服务，使用本地配置或脚本进行响应"
+  "requestMapDescribe": "不请求远程服务，使用本地配置或脚本进行响应",
+
+  "automatic": "自动安装",
+  "manual": "手动安装",
+
+  "openNewWindow": "新窗口打开"
 }
